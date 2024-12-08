@@ -29,18 +29,20 @@ class ChatCallbackHandler(BaseCallbackHandler):
             self.message += token
             self.message_box.markdown(self.message)
 
-options = ['llama-3.1-405b-reasoning',
-           'llama-3.2-90b-Text-Preview',
-           'llama-3.1-70b-versatile', 
-           'llama3-groq-70b-8192-tool-use-preview', 
-           'llama3-70b-8192']
+
+options = [
+    "llama-3.3-70b-versatile",
+    "llama-3.1-70b-versatile",
+    "llama3-groq-70b-8192-tool-use-preview",
+    "llama3-70b-8192",
+]
 
 with st.sidebar:
-    selected_option = st.selectbox('Select a model:', options, index=1)
+    selected_option = st.selectbox("Select a model:", options, index=0)
 
     prompt_text = st.text_area(
         "Prompt",
-"""설명: 하드웨어 및 소프트웨어 전문가로서 당신의 임무는 문의나 진술에 대해 상세하고 이해하기 쉬운 설명을 제공하는 것입니다. 
+        """설명: 하드웨어 및 소프트웨어 전문가로서 당신의 임무는 문의나 진술에 대해 상세하고 이해하기 쉬운 설명을 제공하는 것입니다. 
 하드웨어 및 소프트웨어와 관련된 복잡한 개념을 이해하기 쉽게 설명하여 광범위한 청중이 이해할 수 있도록 해야 합니다. 
 설명을 단순화할 뿐만 아니라 가능한 한 관련 사례를 제시하여 질문자의 이해도를 높이는 것이 목표입니다.
 
@@ -59,31 +61,27 @@ with st.sidebar:
 - 컴퓨터에서 운영 체제의 역할은 무엇인가요?
 - 스마트폰이 하드웨어와 소프트웨어를 모두 사용하여 사진을 캡처하고 처리하는 방법을 설명할 수 있나요?
 - 코드를 실행 가능한 프로그램으로 컴파일하는 과정을 설명할 수 있나요?
-"""
-        # """Explanation: As a hardware and software expert, your task is to provide detailed and easily understandable explanations in response to inquiries or statements. 
-        # You are expected to demystify complex concepts related to both hardware and software, making them accessible to a broad audience. 
+""",
+        # """Explanation: As a hardware and software expert, your task is to provide detailed and easily understandable explanations in response to inquiries or statements.
+        # You are expected to demystify complex concepts related to both hardware and software, making them accessible to a broad audience.
         # Your objective is to enhance the questioner's comprehension by not only simplifying explanations but also by providing relevant examples whenever possible.
-
         # Role: Hardware and Software Expert
         # Objective: To assist questioners in comprehensively understanding hardware and software concepts
-
         # Guidelines:
         # 1. Break down complex technical topics into simple, digestible explanations.
         # 2. Use clear and accessible language that can be understood by individuals without a technical background.
         # 3. Provide real-life examples or hypothetical scenarios to illustrate your explanations and make abstract concepts tangible.
         # 4. Address the 'how' and 'why' behind processes and technologies to deepen the questioner's understanding.
         # 5. When discussing software, explain how it interacts with hardware to perform its functions.
-
         # Example Topics:
         # - How do CPUs process instructions?
         # - What is the role of an operating system in a computer?
         # - Can you explain how a smartphone uses both hardware and software to capture and process photos?
         # - Describe the process of compiling code into an executable program.
-
-        # When answering, it's important to remember that your goal is to make the information as accessible as possible. 
+        # When answering, it's important to remember that your goal is to make the information as accessible as possible.
         # Strive to not only answer the question but also to educate the questioner, providing them with a foundation that enables them to grasp more complex concepts in the future."""
-        )
-    
+    )
+
 if "groq_messages" not in st.session_state:
     st.session_state["groq_messages"] = []
 
@@ -131,6 +129,7 @@ def paint_history():
     for message in st.session_state["groq_messages"]:
         send_message(message["message"], message["role"], save=False)
 
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -167,16 +166,22 @@ def invoke_chain(question):
 
 st.title("Groq-Llama3 Chatbot")
 
-st.markdown("""
+st.markdown(
+    """
     <style>
     .big-font {
         font-size:30px !important;
     }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 if "authentication_status" not in st.session_state:
-    st.markdown("<p class='big-font'>You need to log in from the 'Home' page in the left sidebar.</p>", unsafe_allow_html=True)
+    st.markdown(
+        "<p class='big-font'>You need to log in from the 'Home' page in the left sidebar.</p>",
+        unsafe_allow_html=True,
+    )
 else:
     st.markdown(
         """
@@ -201,4 +206,7 @@ else:
                 callback = True
                 invoke_chain(message)
     else:
-        st.markdown("<p class='big-font'>You need to log in from the 'Home' page in the left sidebar.</p>", unsafe_allow_html=True)
+        st.markdown(
+            "<p class='big-font'>You need to log in from the 'Home' page in the left sidebar.</p>",
+            unsafe_allow_html=True,
+        )
