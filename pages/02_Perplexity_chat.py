@@ -6,8 +6,8 @@ from langchain.callbacks.base import BaseCallbackHandler
 from langchain.memory import ConversationTokenBufferMemory
 
 st.set_page_config(
-    page_title="Groq",
-    page_icon="📃",
+    page_title="Perplexity",
+    page_icon="🔍",
 )
 
 callback = False
@@ -126,7 +126,7 @@ def invoke_chain(question):
     save_context(message, result.content)
 
 
-st.title("Groq-Llama3 Chatbot")
+st.title("Perplexity Chatbot")
 
 st.markdown(
     """

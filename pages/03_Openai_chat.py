@@ -6,11 +6,26 @@ from langchain.callbacks.base import BaseCallbackHandler
 from langchain.memory import ConversationBufferWindowMemory
 
 st.set_page_config(
-    page_title="ChatGPT4",
-    page_icon="📃",
+    page_title="Open AI Chat",
+    page_icon="🤖",
 )
 
 callback = False
+
+# GPT 모델 옵션 추가
+gpt_models = [
+    "gpt-4o-mini",
+    "gpt-4",
+    "o1-mini",
+    "o1-preview",
+]
+
+with st.sidebar:
+    selected_model = st.selectbox("Select GPT Model:", gpt_models, index=0)
+    prompt_text = st.text_area(
+        "Prompt",
+        """You are an engineering expert. Answer the question in Korean, briefly and to the point.""",
+    )
 
 
 class ChatCallbackHandler(BaseCallbackHandler):
@@ -33,9 +48,10 @@ class ChatCallbackHandler(BaseCallbackHandler):
 if "gpt4_messages" not in st.session_state:
     st.session_state["gpt4_messages"] = []
 
+# 선택된 모델을 llm 초기화에 사용
 llm = ChatOpenAI(
     temperature=0.1,
-    model="gpt-4o",
+    model=selected_model,
     streaming=True,
     callbacks=[ChatCallbackHandler()],
 )
@@ -78,12 +94,6 @@ def paint_history():
         send_message(message["message"], message["role"], save=False)
 
 
-with st.sidebar:
-    prompt_text = st.text_area(
-        "Prompt",
-        """You are an engineering expert. explain my question in detail in Korean.""",
-    )
-
 prompt = ChatPromptTemplate.from_messages(
     [
         (
@@ -118,7 +128,7 @@ def invoke_chain(question):
     save_context(message, result.content)
 
 
-st.title("ChatGPT4 Chatbot")
+st.title("Open AI Chatbot")
 
 st.markdown(
     """
