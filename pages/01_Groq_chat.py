@@ -94,7 +94,7 @@ llm = ChatGroq(
 
 memory = ConversationTokenBufferMemory(
     llm=llm,
-    max_token_limit=1000,
+    max_token_limit=2000,
     return_messages=True,
 )
 
