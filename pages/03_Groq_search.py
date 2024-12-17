@@ -107,8 +107,10 @@ def send_message(message, role, save=True):
 
 
 def paint_history():
-    for message in st.session_state["search_messages"]:
-        send_message(message["message"], message["role"], save=False)
+    if "search_messages" in st.session_state:
+        for message in st.session_state["search_messages"]:
+            with st.chat_message(message["role"]):
+                st.markdown(message["message"])
 
 
 today = datetime.datetime.today().strftime("%D")
@@ -198,8 +200,11 @@ else:
         """
     )
 
-    send_message("I'm ready! Ask away!", "ai", save=False)
-    paint_history()
+    # 대화 기록 표시
+    if "search_messages" in st.session_state:
+        paint_history()
+    else:
+        send_message("I'm ready! Ask away!", "ai", save=True)
 
     authentication_status = st.session_state["authentication_status"]
     if authentication_status:
@@ -212,6 +217,7 @@ else:
                     try:
                         response = invoke_chain(message)
                         st.markdown(response)
+                        save_messages(response, "ai")
                     except Exception as e:
                         st.error(f"An error occurred: {str(e)}")
     else:
