@@ -15,16 +15,16 @@ callback = False
 # GPT 모델 옵션 추가
 gpt_models = [
     "gpt-4o-mini",
-    "gpt-4",
+    "gpt-4o",
     "o1-mini",
-    "o1-preview",
+    "o1",
 ]
 
 with st.sidebar:
     selected_model = st.selectbox("Select GPT Model:", gpt_models, index=0)
     prompt_text = st.text_area(
         "Prompt",
-        """You are an engineering expert. Answer the question in Korean, briefly and to the point.""",
+        """You are an engineering expert. Answer the question briefly and to the point.""",
     )
 
 
