@@ -2,7 +2,7 @@ import streamlit as st
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.callbacks.base import BaseCallbackHandler
-from langchain.memory import ConversationTokenBufferMemory
+from langchain.memory import ConversationTokenBufferMemory, ConversationSummaryMemory
 from langchain_groq import ChatGroq
 
 st.set_page_config(
@@ -129,11 +129,16 @@ llm = ChatGroq(
     callbacks=[ChatCallbackHandler()],
 )
 
-memory = ConversationTokenBufferMemory(
+memory = ConversationSummaryMemory(
     llm=llm,
-    max_token_limit=2000,
     return_messages=True,
 )
+
+# memory = ConversationTokenBufferMemory(
+#     llm=llm,
+#     max_token_limit=2000,
+#     return_messages=True,
+# )
 
 if "groq_chat_summary" not in st.session_state:
     st.session_state["groq_chat_summary"] = []
