@@ -15,22 +15,47 @@ callback = False
 
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
+    thinking = ""
+    in_think_block = False
 
     def on_llm_start(self, *args, **kwargs):
         if callback:
             self.message_box = st.empty()
+            self.message = ""
+            self.thinking = ""
+            self.in_think_block = False
 
     def on_llm_end(self, *args, **kwargs):
         if callback:
-            save_messages(self.message, "ai")
+            # 최종 메시지를 표시
+            final_message = ""
+            if self.thinking:
+                final_message += f'<div class="think-box">{self.thinking}</div>'
+            final_message += self.message
+            save_messages(final_message, "ai")
 
     def on_llm_new_token(self, token, *args, **kwargs):
         if callback:
-            self.message += token
-            self.message_box.markdown(self.message)
+            if token.startswith("<think>"):
+                self.in_think_block = True
+            elif token.startswith("</think>"):
+                self.in_think_block = False
+            else:
+                if self.in_think_block:
+                    self.thinking += token
+                else:
+                    self.message += token
+
+            # 현재까지의 전체 메시지를 표시
+            display_message = ""
+            if self.thinking:
+                display_message += f'<div class="think-box">{self.thinking}</div>'
+            display_message += self.message
+            self.message_box.markdown(display_message, unsafe_allow_html=True)
 
 
 options = [
+    "deepseek-r1-distill-llama-70b",
     "llama-3.3-70b-versatile",
     "llama-3.1-70b-versatile",
     "llama3-groq-70b-8192-tool-use-preview",
@@ -54,7 +79,7 @@ Your goal is not only to simplify the explanation, but also to provide relevant 
     1. break down complex technical topics into simple, easy-to-understand explanations.
     2. Use clear, accessible language that individuals without a technical background can understand.
     3. Provide real-world examples or hypothetical scenarios to illustrate explanations and make abstract concepts concrete.
-    4. Explain the “how” and “why” of processes and technologies to deepen the questioner's understanding.
+    4. Explain the "how" and "why" of processes and technologies to deepen the questioner's understanding.
     5. When discussing software, explain how the software interacts with hardware to perform its function.
 """.strip(),
         #         """설명: 하드웨어 및 소프트웨어 전문가로서 당신의 임무는 문의나 진술에 대해 상세하고 이해하기 쉬운 설명을 제공하는 것입니다.
@@ -183,6 +208,20 @@ st.markdown(
     <style>
     .big-font {
         font-size:30px !important;
+    }
+    .think-box {
+        background-color: rgba(240, 242, 246, 0.1);  /* 더 어두운 배경색 */
+        border-left: 3px solid #7c8494;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-style: italic;
+        color: inherit;  /* 현재 테마의 텍스트 색상 사용 */
+    }
+    /* 다크 모드 대응 */
+    [data-theme="dark"] .think-box {
+        background-color: rgba(49, 51, 63, 0.8);
+        border-left: 3px solid #4c5156;
     }
     </style>
     """,
